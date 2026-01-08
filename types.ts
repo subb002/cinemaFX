@@ -24,6 +24,7 @@ export interface Movie {
   duration?: string;
   rating?: string;
   year?: string;
+  storageType?: 'local' | 'external';
 }
 
 export interface AuthState {
