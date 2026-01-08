@@ -7,7 +7,6 @@ import Home from './pages/Home';
 import AdminDashboard from './pages/AdminDashboard';
 import Player from './components/Player';
 
-// Initial Mock Data
 const INITIAL_MOVIES: Movie[] = [
   {
     id: '1',
@@ -26,15 +25,6 @@ const INITIAL_MOVIES: Movie[] = [
     thumbnailUrl: 'https://picsum.photos/id/10/1280/720',
     description: 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.',
     year: '2008'
-  },
-  {
-    id: '3',
-    title: 'Inception',
-    genre: 'Thriller',
-    videoUrl: 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-    thumbnailUrl: 'https://picsum.photos/id/20/1280/720',
-    description: 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.',
-    year: '2010'
   }
 ];
 
@@ -42,7 +32,7 @@ const INITIAL_USERS: User[] = [
   {
     id: 'admin-id',
     name: 'admin',
-    password: 'admin123',
+    password: 'admin',
     role: UserRole.ADMIN,
     canDownload: true,
     isBlocked: false,
@@ -91,7 +81,7 @@ const App: React.FC = () => {
   }, [auth]);
 
   const handleLogin = (name: string, pass: string) => {
-    const user = users.find(u => u.name === name && u.password === pass);
+    const user = users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.password === pass);
     if (user) {
       if (user.isBlocked) {
         alert('This account has been blocked by the admin.');
@@ -101,7 +91,7 @@ const App: React.FC = () => {
       setUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
       setAuth({ user: updatedUser, isAuthenticated: true });
     } else {
-      alert('Invalid credentials');
+      alert('Invalid credentials. Check Username and Password.');
     }
   };
 
@@ -129,9 +119,23 @@ const App: React.FC = () => {
     setUsers(prev => prev.map(u => 
       u.id === userId ? { ...u, isBlocked: !u.isBlocked } : u
     ));
-    // If the blocked user is currently logged in, force logout (simple version)
     if (auth.user?.id === userId) {
       handleLogout();
+    }
+  };
+
+  const handleImportData = (jsonData: string) => {
+    try {
+      const data = JSON.parse(jsonData);
+      if (data.users && data.movies) {
+        setUsers(data.users);
+        setMovies(data.movies);
+        alert("Data synchronized successfully! Your library and users are updated.");
+      } else {
+        alert("Invalid sync code format.");
+      }
+    } catch (e) {
+      alert("Failed to parse sync code. Make sure you copied the entire code.");
     }
   };
 
@@ -162,6 +166,7 @@ const App: React.FC = () => {
             onAddMovie={addMovie}
             onToggleDownload={toggleDownloadAccess}
             onToggleBlock={toggleBlockUser}
+            onImportData={handleImportData}
           />
         )}
       </main>
