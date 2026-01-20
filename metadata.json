@@ -1,0 +1,8 @@
+{
+  "name": "Cinemax Streaming",
+  "description": "A Netflix-like streaming platform with admin-controlled user access, movie uploading capabilities, and content management.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
